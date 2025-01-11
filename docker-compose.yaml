@@ -36,7 +36,7 @@ services:
   redis:
     container_name: redis-service
     restart: unless-stopped
-    image: redis
+    image: redis:7.0.5-alpine
     networks:
       - backend-network
     expose:
