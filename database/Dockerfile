@@ -1,7 +1,7 @@
-FROM mongo
+FROM mongo:latest
 
-WORKDIR mongo
+WORKDIR /data/db
 
-COPY .  .
+COPY . .
 
-ENTRYPOINT ["mongod"]
+ENTRYPOINT ["mongod", "--bind_ip_all"]

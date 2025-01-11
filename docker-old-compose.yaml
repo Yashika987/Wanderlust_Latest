@@ -1,0 +1,146 @@
+version: "3.8"
+services:
+  mongodb:
+    container_name: mongo-service
+    networks: 
+      - backend-network
+    image: mongo
+    volumes:
+      - ./backend/data:/dataversion: "3.8"
+services:
+  mongodb:
+    container_name: mongo-service
+    networks:
+      - backend-network
+    image: mongo
+    volumes:
+      - ./backend/data:/data  # MongoDB data storage
+      - ./backend/data:/docker-entrypoint-initdb.d
+    ports:
+      - "27017:27017"
+
+  backend:
+    container_name: backend
+    build: ./backend
+    networks:
+      - backend-network
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    networks:
+      - backend-network
+    env_file:
+      - ./frontend/.env.docker
+    ports:
+      - "5173:5173"
+
+  redis:
+    container_name: redis-service
+    restart: unless-stopped
+    image: redis
+    networks:
+      - backend-network
+    expose:
+        - 6379
+    depends_on:
+      - mongodb
+
+volumes:
+  data:
+    ports:
+      - "27017:27017"
+
+  backend:
+    container_name: backend
+    build: ./backend
+    networks:
+      - backend-network
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    networks: 
+      - backend-network
+    env_file:
+      - ./frontend/.env.docker
+    ports:
+      - "5173:5173"
+
+  redis:
+    container_name: redis-service
+    restart: unless-stopped
+    image: redis
+    networks:
+      - backend-network 
+    expose:
+        - 6379
+    depends_on:
+      - mongodb
+
+volumes:
+  data:
+
+networks:
+  backend-network:
+    driver: bridge  container_name: mongo-service
+    networks:
+      - backend-network
+    image: mongo
+    volumes:
+      - ./backend/data:/data
+    ports:
+      - "27017:27017"
+
+  backend:
+    container_name: backend
+    build: ./backend
+    networks:
+      - backend-network
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    networks:
+      - backend-network
+    env_file:
+      - ./frontend/.env.docker
+    ports:
+      - "5173:5173"
+
+  redis:
+    container_name: redis-service
+    restart: unless-stopped
+    image: redis
+    networks:
+      - backend-network
+    expose:
+        - 6379
+    depends_on:
+      - mongodb
+
+volumes:
+  data:
+
+networks:
+  backend-network:
+    driver: bridge
+

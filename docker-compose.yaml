@@ -1,16 +1,21 @@
 version: "3.8"
 services:
   mongodb:
-    container_name: mongo
-    image: mongo:latest
+    container_name: mongo-service
+    networks:
+      - backend-network
+    image: mongo
     volumes:
-      - ./backend/data:/data
+      - ./backend/data:/data  # MongoDB data storage
+      - ./backend/data:/docker-entrypoint-initdb.d  # MongoDB init scripts
     ports:
       - "27017:27017"
 
   backend:
     container_name: backend
     build: ./backend
+    networks:
+      - backend-network
     env_file:
       - ./backend/.env.docker
     ports:
@@ -21,19 +26,27 @@ services:
   frontend:
     container_name: frontend
     build: ./frontend
+    networks:
+      - backend-network
     env_file:
       - ./frontend/.env.docker
     ports:
       - "5173:5173"
 
   redis:
-    container_name: redis
+    container_name: redis-service
     restart: unless-stopped
-    image: redis:7.0.5-alpine 
+    image: redis
+    networks:
+      - backend-network
     expose:
-        - 6379
+      - 6379
     depends_on:
       - mongodb
 
 volumes:
   data:
+
+networks:
+  backend-network:
+    driver: bridge
